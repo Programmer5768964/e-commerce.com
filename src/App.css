@@ -1,10 +1,95 @@
-.App {
+/* .App {
   text-align: center;
-}
+} */
 
-.App-logo {
+/* .App-logo {
   height: 40vmin;
   pointer-events: none;
+} */
+.nav-ul li {
+  display: inline-block;
+  padding: 10px;
+
+}
+
+.nav-ul {
+  padding: 5px;
+  margin: 0px;
+  background-color: skyblue;
+}
+
+.nav-ul-right {
+  text-align: right;
+}
+
+.nav-ul li a {
+
+  color: white;
+  padding: 5px;
+  text-decoration: none;
+}
+
+.footer {
+  position: absolute;
+  text-align: center;
+  bottom: 0;
+  width: 100%;
+  background-color: skyblue;
+}
+
+.inputBox {
+  display: block;
+  padding: 7px;
+  margin: 25px;
+  width: 300px;
+  border: 2px solid skyblue;
+  border-radius: 5px;
+}
+
+.form {
+  margin-left: 30%;
+}
+
+.btn {
+  margin: 25px;
+  padding: 10px;
+  width: 150px;
+  background-color: skyblue;
+  border: 1px solid black;
+  cursor: pointer;
+  border-radius: 5px;
+
+}
+
+.form button:hover {
+  background-color: #282c34;
+  border: #61dafb;
+  color: wheat;
+}
+
+.invalid-input {
+
+
+  color: red;
+  margin-top: -20px;
+  display: block;
+  margin-left: 28px;
+}
+
+.product-list{
+  text-align: center;
+  margin-top: 20px;
+}
+.product-list ul li{
+  display: inline-block;
+    text-decoration: none;
+    border: 1px solid skyblue;
+    padding: 9px;
+    width: 150px;
+
+}
+.product-list ul{
+  margin: 0;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -32,6 +117,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
