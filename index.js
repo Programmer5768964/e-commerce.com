@@ -7,6 +7,9 @@ const ProductModel = require('./db/product');
 const adminModel = require('./db/admin');
 const app = express();
 
+const Jwt = require("jsonwebtoken");
+const Jwtkey = "suji-programmer";
+
 app.use(express.json());
 app.use(cors());
 
@@ -17,7 +20,13 @@ app.post("/register", async (req, resp) => {
     // delete password from returning data as the result 
     result = result.toObject();
     delete result.password;
-    resp.send(result)
+    Jwt.sign({result},Jwtkey,{expiresIn:"2h"},(err,token)=>{
+        if(err){
+            resp.send({result:"somthing went's wrong, please try after some time"})
+        }
+        resp.send({result,auth : token})
+    })
+    
 })
 
 
@@ -26,7 +35,13 @@ app.post("/login", async (req, resp) => {
 
         let User = await UserModel.findOne(req.body).select("-password");
         if (User) {
-            resp.send(User);
+            Jwt.sign({User},Jwtkey,{expiresIn:"2h"},(err,token)=>{
+                if(err){
+                    resp.send({result:"somthing went's wrong, please try after some time"})
+                }
+                resp.send({User,auth : token})
+            })
+            
         } else {
             resp.send({ result: "No User Found" })
         }
@@ -36,13 +51,13 @@ app.post("/login", async (req, resp) => {
 
 })
 
-app.post('/add-product', async (req, resp) => {
+app.post('/add-product',verifyToken, async (req, resp) => {
     let productModel = new ProductModel(req.body);
     let result = await productModel.save();
     resp.send(result);
 })
 
-app.get('/products', async (req, resp) => {
+app.get('/products',verifyToken, async (req, resp) => {
     let products = await ProductModel.find();
     if (products.length > 0) {
         resp.send(products)
@@ -51,7 +66,7 @@ app.get('/products', async (req, resp) => {
     }
 })
 
-app.delete('/product/:id', async (req, resp) => {
+app.delete('/product/:id',verifyToken, async (req, resp) => {
 
     const result = await ProductModel.deleteOne({ _id: req.params.id });
     resp.send(result)
@@ -59,7 +74,7 @@ app.delete('/product/:id', async (req, resp) => {
 
 })
 
-app.get("/product/:id", async (req, resp) => {
+app.get("/product/:id",verifyToken, async (req, resp) => {
     let result = await ProductModel.findOne({ _id: req.params.id });
     if (result) {
         resp.send(result);
@@ -68,13 +83,13 @@ app.get("/product/:id", async (req, resp) => {
     }
 })
 
-app.put("/product/:id", async (req, resp) => {
+app.put("/product/:id",verifyToken, async (req, resp) => {
     // resp.send("Put is working")
     let result = await ProductModel.updateOne({ _id: req.params.id }, { $set: req.body })
     resp.send(result)
 })
 
-app.get("/search/:key", async (req, resp) => {
+app.get("/search/:key",verifyToken,async (req, resp) => {
     let result = await ProductModel.find({
         "$or": [
             { name: { $regex: req.params.key } },
@@ -86,7 +101,7 @@ app.get("/search/:key", async (req, resp) => {
     resp.send(result)
 })
 
-app.post('/admin',async(req,resp)=>{
+app.post('/admin',verifyToken,async(req,resp)=>{
     if(req.body.password && req.body.username){
         const result = await adminModel.findOne(req.body).select("-password");
        
@@ -103,6 +118,25 @@ app.post('/admin',async(req,resp)=>{
    
     
 })
+
+function verifyToken(req,resp,next){
+    let token = req.headers['authorization'];
+    if(token){
+        token = token.split(' ')[1];
+        Jwt.verify(token,Jwtkey,(err,valid)=>{
+            if(err){
+                resp.status(401).send({result:"Please provide a valid token"})
+            }else{
+                next();
+            }
+
+        })
+    }else{
+        resp.status(403).send({result:"Please send a token with headers"})
+    }
+    // console.warn("middleware called",token);
+    // next();
+}
 
 
 
