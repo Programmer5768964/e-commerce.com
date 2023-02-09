@@ -14,6 +14,10 @@ import AddProduct from './components/AddProduct';
 
 import ProductList from './components/ProductsList';
 
+import UpdateProduct from './components/UpdateProduct';
+
+import AdminLogin from './components/Admin';
+
 
 function App() {
   return (
@@ -23,15 +27,18 @@ function App() {
       <Routes>
         <Route element={<PrivateRoute/>} >
         <Route path = "/" element = {<ProductList/>} />
-        <Route path = "/add" element = {<AddProduct/>} />
-        <Route path = "/update" element = {<h1>Update Product Component</h1>} />
+        
+        <Route path = "/update/:id" element = {<UpdateProduct/>} />
         <Route path = "/logout" element = {<h1>LogOut Component</h1>} />
         <Route path = "/profile" element = {<h1>Profile Component</h1>} />
+        <Route path='/admin' element = {<AdminLogin/>} />
+        <Route path = "/add" element = {<AddProduct/>} />
         </Route>
 
 
         <Route path = "/SignUp" element = {<SignUp/>} />
         <Route path = "/Login" element = {<Login/>} />
+      
       </Routes>
       <Footer/>
       </BrowserRouter>

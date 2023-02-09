@@ -29,8 +29,9 @@ const Login = ()=>{
 
         result = await result.json();
         console.warn(result);
-        if(result.name){
-            localStorage.setItem('user',JSON.stringify(result))
+        if(result.auth){
+            localStorage.setItem('user',JSON.stringify(result.User))
+            localStorage.setItem('token',JSON.stringify(result.auth))
             navigate('/')
         }else{
             alert("please enter valid field")
