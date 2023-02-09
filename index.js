@@ -4,6 +4,7 @@ const UserModel = require('./db/users');
 const cors = require("cors")             //fixing cors problem using cors module 
 
 const ProductModel = require('./db/product');
+const adminModel = require('./db/admin');
 const app = express();
 
 app.use(express.json());
@@ -21,36 +22,88 @@ app.post("/register", async (req, resp) => {
 
 
 app.post("/login", async (req, resp) => {
-    if (req.body.password && req.body.email)
-     {
-       
+    if (req.body.password && req.body.email) {
+
         let User = await UserModel.findOne(req.body).select("-password");
         if (User) {
             resp.send(User);
         } else {
             resp.send({ result: "No User Found" })
         }
-    }else{
-        resp.send({result:"No User Found"});
+    } else {
+        resp.send({ result: "No User Found" });
     }
 
 })
 
-app.post('/add-product', async(req,resp)=>{
-    let productModel = new  ProductModel(req.body);
+app.post('/add-product', async (req, resp) => {
+    let productModel = new ProductModel(req.body);
     let result = await productModel.save();
     resp.send(result);
 })
 
-app.get('/products', async(req,resp)=>{
-    let products = await  ProductModel.find();
-    if(products.length > 0)
-    {
+app.get('/products', async (req, resp) => {
+    let products = await ProductModel.find();
+    if (products.length > 0) {
         resp.send(products)
-    }else{
-        resp.send({result:"No products found"})
+    } else {
+        resp.send({ result: "No products found" })
     }
 })
+
+app.delete('/product/:id', async (req, resp) => {
+
+    const result = await ProductModel.deleteOne({ _id: req.params.id });
+    resp.send(result)
+
+
+})
+
+app.get("/product/:id", async (req, resp) => {
+    let result = await ProductModel.findOne({ _id: req.params.id });
+    if (result) {
+        resp.send(result);
+    } else {
+        resp.send({ result: "No record found" })
+    }
+})
+
+app.put("/product/:id", async (req, resp) => {
+    // resp.send("Put is working")
+    let result = await ProductModel.updateOne({ _id: req.params.id }, { $set: req.body })
+    resp.send(result)
+})
+
+app.get("/search/:key", async (req, resp) => {
+    let result = await ProductModel.find({
+        "$or": [
+            { name: { $regex: req.params.key } },
+            { price: { $regex: req.params.key } },
+            { catagory: { $regex: req.params.key } },
+            { company: { $regex: req.params.key } }
+        ]
+    })
+    resp.send(result)
+})
+
+app.post('/admin',async(req,resp)=>{
+    if(req.body.password && req.body.username){
+        const result = await adminModel.findOne(req.body).select("-password");
+       
+        if(result)
+        {
+            delete result.password;
+            resp.send(result)
+        }else{
+            resp.send({result:"Not valid admin"})
+        }
+    }else{
+        resp.send({result:"Not valid admin"})
+    }
+   
+    
+})
+
 
 
 
