@@ -5,10 +5,13 @@ const cors = require("cors")             //fixing cors problem using cors module
 
 const ProductModel = require('./db/product');
 const adminModel = require('./db/admin');
+const profileModel = require('./db/profileModel');
 const app = express();
 
 const Jwt = require("jsonwebtoken");
 const Jwtkey = "suji-programmer";
+
+const multer = require("multer");
 
 app.use(express.json());
 app.use(cors());
@@ -137,6 +140,36 @@ function verifyToken(req,resp,next){
     // console.warn("middleware called",token);
     // next();
 }
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "profileUpload")
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname)
+    }
+})
+let upload = multer({storage:storage})
+
+app.post("/api/profile",upload.single("profilePic"),(req,resp)=>{
+    // resp.send("profile api working...")
+    const u_name = req.body.u_name;
+    const img_Url = req.file.path;
+    const profileDtl = new profileModel({
+        u_name:u_name,
+        img_Url:img_Url
+    })
+    const result = profileDtl.save();
+    resp.send(result);
+    console.log(req.file.path);
+
+})
+
+app.post("/api/getpic",async(req,resp)=>{
+    const result = await profileModel.findOne(req.body);
+    console.log(req.body);
+    resp.send(result.img_Url);
+})
 
 
 

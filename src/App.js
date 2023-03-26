@@ -18,6 +18,8 @@ import UpdateProduct from './components/UpdateProduct';
 
 import AdminLogin from './components/Admin';
 
+const auth = localStorage.getItem("user");
+
 
 function App() {
   return (
@@ -25,7 +27,14 @@ function App() {
       <BrowserRouter>
       <NavBar/>
       <Routes>
+        {
+          auth?
+          <Route path = "/signup" element = {<SignUp/>} />
+          :
+
+        }
         <Route element={<PrivateRoute/>} >
+        
         <Route path = "/" element = {<ProductList/>} />
         
         <Route path = "/update/:id" element = {<UpdateProduct/>} />
@@ -36,7 +45,7 @@ function App() {
         </Route>
 
 
-        <Route path = "/SignUp" element = {<SignUp/>} />
+        
         <Route path = "/Login" element = {<Login/>} />
       
       </Routes>
